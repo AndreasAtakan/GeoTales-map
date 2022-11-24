@@ -1,0 +1,30 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.cache
+.parcel-cache
+package-lock.json
+vendor
+composer.lock
+
+# testing
+*/coverage
+
+# production
+build/
+assets/main_*.js*
+assets/main_*.css
+
+# misc
+*/.DS_Store
+*/.env
+*/.env.local
+*/.env.development.local
+*/.env.test.local
+*/.env.production.local
+
+*/temp.*
+temp/
+*/assets/img/*
+*dump*.sql
