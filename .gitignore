@@ -7,6 +7,7 @@ node_modules
 package-lock.json
 vendor
 composer.lock
+lib-old
 
 # testing
 */coverage
@@ -26,5 +27,3 @@ assets/main_*.css
 
 */temp.*
 temp/
-*/assets/img/*
-*dump*.sql
