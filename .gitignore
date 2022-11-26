@@ -13,6 +13,7 @@ lib-old
 */coverage
 
 # production
+dist/
 build/
 assets/main_*.js*
 assets/main_*.css

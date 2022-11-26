@@ -8,6 +8,10 @@
 
 "use strict";
 
+//import "jquery-resizable";
+
+import mapboxgl from "mapbox-gl";
+
 import {
 	import_data,
 	export_data,
@@ -19,7 +23,7 @@ import {
 import { Scenes } from "./scenes.js";
 import { Textboxes } from "./textboxes.js";
 
-import "./map/map.js";
+//import "./map/map.js";
 
 
 window.onload = function(ev) {
@@ -60,7 +64,10 @@ window.onload = function(ev) {
 	_TEXTBOXES = new Textboxes();
 
 
-	_MAP = L.map("map", {
+	mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmVhc2F0YWthbiIsImEiOiJja3dqbGlham0xMDAxMnhwazkydDRrbDRwIn0.zQJIqHf0Trp--7GHLc4ySg";
+	_MAP = new mapboxgl.Map({
+		container: "map",
+		style: "mapbox://styles/mapbox/streets-v12",
 		center: [ 49, 14 ],
 		zoom: window.innerWidth < 575.98 ? 3 : 5,
 		zoomControl: false,
@@ -74,14 +81,14 @@ window.onload = function(ev) {
 		//touchZoom: false,
 		//worldCopyJump: true
 
-		contextmenu: true,
+		/*contextmenu: true,
 		contextmenuItems: [
 			{ text: "Copy coordinates", callback: ev => { navigator.clipboard.writeText( `${ev.latlng.lat}, ${ev.latlng.lng}` ); } },
 			{ text: "Center map here", callback: ev => { _MAP.panTo(ev.latlng); } },
 			"-",
 			{ text: "Zoom in", icon: "assets/zoom-in.png", callback: ev => { _MAP.zoomIn(); } },
 			{ text: "Zoom out", icon: "assets/zoom-out.png", callback: ev => { _MAP.zoomOut(); } }
-		]
+		]*/
 	});
 
 	document.addEventListener("_setup", ev => {
@@ -227,7 +234,7 @@ window.onload = function(ev) {
 	setInterval(save_data, 5 * 60 * 1000);
 
 
-	$("#loadingModal").modal("show");
+	/*$("#loadingModal").modal("show");
 	$.ajax({
 		type: "GET",
 		url: "api/map_read.php",
@@ -245,9 +252,9 @@ window.onload = function(ev) {
 			console.error(xhr.status, error);
 			setTimeout(function() { $("#loadingModal").modal("hide"); $("#errorModal").modal("show"); }, 750);
 		}
-	});
+	});*/
 
-	$.ajax({
+	/*$.ajax({
 		type: "GET",
 		url: "api/upload_get.php",
 		//data: {},
@@ -268,6 +275,6 @@ window.onload = function(ev) {
 		error: function(xhr, status, error) {
 			console.error(xhr.status, error);
 		}
-	});
+	});*/
 
 };

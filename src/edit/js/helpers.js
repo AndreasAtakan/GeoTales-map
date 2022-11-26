@@ -198,7 +198,7 @@ export function export_data(type) {
 }
 
 export function save_data(callback) {
-	$.ajax({
+	/*$.ajax({
 		type: "POST",
 		url: "api/map_write.php",
 		data: {
@@ -215,7 +215,7 @@ export function save_data(callback) {
 			console.error(xhr.status, error);
 			setTimeout(function() { $("#loadingModal").modal("hide"); $("#errorModal").modal("show"); }, 750);
 		}
-	});
+	});*/
 }
 
 

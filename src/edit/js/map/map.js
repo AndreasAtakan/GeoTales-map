@@ -10,7 +10,7 @@
 
 import { uuid, save_data, get_aspect_ratio_dimentions, init_img_basemaps } from "../helpers.js";
 import { avatar_popup, polyline_popup, polygon_popup } from "../generate.js";
-import { bind_setup } from "./layers.js";
+//import { bind_setup } from "./layers.js";
 
 
 L.Map.addInitHook(function() {
@@ -191,7 +191,7 @@ L.Map.addInitHook(function() {
 		o.on("pm:dragstart", ev => { o.unbindPopup(); });
 		o.on("pm:dragend", ev => { this.setPopup( ev.layer ); });
 
-		o.on("popupopen", ev => { bind_setup(o); });
+		//o.on("popupopen", ev => { bind_setup(o); });
 		o.on("mouseover", ev => { this.highlightObject(o.options.id); });
 		o.on("mouseout", ev => { this.unhighlightObject(o.options.id); });
 
