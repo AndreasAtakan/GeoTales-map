@@ -10,8 +10,6 @@
 
 //import "jquery-resizable";
 
-import mapboxgl from "mapbox-gl";
-
 import {
 	import_data,
 	export_data,
@@ -22,8 +20,7 @@ import {
 
 import { Scenes } from "./scenes.js";
 import { Textboxes } from "./textboxes.js";
-
-//import "./map/map.js";
+import { MMap } from "./map/map.js";
 
 
 window.onload = function(ev) {
@@ -64,32 +61,8 @@ window.onload = function(ev) {
 	_TEXTBOXES = new Textboxes();
 
 
-	mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmVhc2F0YWthbiIsImEiOiJja3dqbGlham0xMDAxMnhwazkydDRrbDRwIn0.zQJIqHf0Trp--7GHLc4ySg";
-	_MAP = new mapboxgl.Map({
-		container: "map",
-		style: "mapbox://styles/mapbox/streets-v12",
-		center: [ 49, 14 ],
-		zoom: window.innerWidth < 575.98 ? 3 : 5,
-		zoomControl: false,
-		maxZoom: 18,
-		doubleClickZoom: false,
-		zoomAnimationThreshold: 100,
-		wheelPxPerZoomLevel: 1500,
-		keyboard: false,
-		tap: false,
-		boxZoom: false,
-		//touchZoom: false,
-		//worldCopyJump: true
+	_MAP = new MMap();
 
-		/*contextmenu: true,
-		contextmenuItems: [
-			{ text: "Copy coordinates", callback: ev => { navigator.clipboard.writeText( `${ev.latlng.lat}, ${ev.latlng.lng}` ); } },
-			{ text: "Center map here", callback: ev => { _MAP.panTo(ev.latlng); } },
-			"-",
-			{ text: "Zoom in", icon: "assets/zoom-in.png", callback: ev => { _MAP.zoomIn(); } },
-			{ text: "Zoom out", icon: "assets/zoom-out.png", callback: ev => { _MAP.zoomOut(); } }
-		]*/
-	});
 
 	document.addEventListener("_setup", ev => {
 		_MAP.setup(); _TEXTBOXES.setup(); _SCENES.setup();

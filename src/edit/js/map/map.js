@@ -3,7 +3,7 @@
 *                                                                              *
 * Unauthorized copying of this file, via any medium is strictly prohibited     *
 * Proprietary and confidential                                                 *
-* Written by Andreas Atakan <aca@geotales.io>, January 2022                  *
+* Written by Andreas Atakan <aca@geotales.io>, January 2022                    *
 *******************************************************************************/
 
 "use strict";
@@ -12,6 +12,41 @@ import { uuid, save_data, get_aspect_ratio_dimentions, init_img_basemaps } from 
 import { avatar_popup, polyline_popup, polygon_popup } from "../generate.js";
 //import { bind_setup } from "./layers.js";
 
+import mapboxgl from "mapbox-gl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+
+
+mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmVhc2F0YWthbiIsImEiOiJja3dqbGlham0xMDAxMnhwazkydDRrbDRwIn0.zQJIqHf0Trp--7GHLc4ySg";
+
+export function MMap() {
+	this.map = new mapboxgl.Map({
+		container: "map",
+		style: "mapbox://styles/mapbox/streets-v12",
+		customAttribution: `&copy; <a href=\"https://${_HOST}/\" target=\"_blank\">GeoTales</a>`,
+		projection: "mercator",
+		center: [ 14, 49 ],
+		zoom: window.innerWidth < 575.98 ? 3 : 4,
+		doubleClickZoom: false,
+		keyboard: false,
+		boxZoom: false
+
+		/*contextmenu: true,
+		contextmenuItems: [
+			{ text: "Copy coordinates", callback: ev => { navigator.clipboard.writeText( `${ev.latlng.lat}, ${ev.latlng.lng}` ); } },
+			{ text: "Center map here", callback: ev => { _MAP.panTo(ev.latlng); } },
+			"-",
+			{ text: "Zoom in", icon: "assets/zoom-in.png", callback: ev => { _MAP.zoomIn(); } },
+			{ text: "Zoom out", icon: "assets/zoom-out.png", callback: ev => { _MAP.zoomOut(); } }
+		]*/
+	});
+
+	//
+
+
+	this.map.on("load", ev => {
+		//
+	});
+}
 
 L.Map.addInitHook(function() {
 
