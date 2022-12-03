@@ -1,7 +1,7 @@
 # GeoTales-map
 
 ### Datastructure
-```json
+```javascript
 {
 	"options": {
 		//"aspectratio": 0.0, // maybe remove? One of 16/9, 9/16 and 4/3
