@@ -20,7 +20,7 @@ import {
 
 import { Scenes } from "./scenes.js";
 import { Textboxes } from "./textboxes.js";
-import { MMap } from "./map/map.js";
+import { MMap } from "./map.js";
 
 
 window.onload = function(ev) {
@@ -39,7 +39,7 @@ window.onload = function(ev) {
 			resizeTimer = false;
 			$(window).trigger("resizeend");
 		}, 250);
-	}).on("resizeend", function() { _MAP.setAspectRatio(); });
+	}).on("resizeend", function() { /*_MAP.setAspectRatio();*/ });
 
 
 

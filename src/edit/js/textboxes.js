@@ -13,46 +13,48 @@
 import { uuid, save_data } from "./helpers.js";
 
 
-export function Textboxes() {
-	this.store = [];
+export class Textboxes {
+	constructor() {
+		this.store = [];
 
-	$("input#_img_textbox").change(function(ev) {
-		let file = $(this)[0].files[0];
-		if(!file) { return; }
+		$("input#_img_textbox").change(function(ev) {
+			let file = $(this)[0].files[0];
+			if(!file) { return; }
 
-		$("#loadingModal").modal("show");
-		let data = new FormData();
-		data.append("type", "image");
-		data.append("image", file);
-		$.ajax({
-			type: "POST",
-			url: "api/upload_create.php",
-			data: data,
-			contentType: false,
-			processData: false,
-			success: function(result, status, xhr) {
-				$("#textbox #content").trumbowyg("execCmd", { cmd: "insertImage", param: result, forceCss: false, skipTrumbowyg: true });
-				setTimeout(function() { $("#loadingModal").modal("hide"); }, 750);
-			},
-			error: function(xhr, status, error) {
-				console.log(xhr.status, error);
-				setTimeout(function() { $("#loadingModal").modal("hide"); $("#errorModal").modal("show"); }, 750);
-			}
+			$("#loadingModal").modal("show");
+			let data = new FormData();
+			data.append("type", "image");
+			data.append("image", file);
+			$.ajax({
+				type: "POST",
+				url: "api/upload_create.php",
+				data: data,
+				contentType: false,
+				processData: false,
+				success: function(result, status, xhr) {
+					$("#textbox #content").trumbowyg("execCmd", { cmd: "insertImage", param: result, forceCss: false, skipTrumbowyg: true });
+					setTimeout(function() { $("#loadingModal").modal("hide"); }, 750);
+				},
+				error: function(xhr, status, error) {
+					console.log(xhr.status, error);
+					setTimeout(function() { $("#loadingModal").modal("hide"); $("#errorModal").modal("show"); }, 750);
+				}
+			});
 		});
-	});
 
-	$("#textbox input#lock").change(ev => {
-		this.setLock( ev.target.checked );
-	});
+		$("#textbox input#lock").change(ev => {
+			this.setLock( ev.target.checked );
+		});
 
-	$("#textbox button#close").click(ev => { this.delete(_SCENES.active); });
+		$("#textbox button#close").click(ev => { this.delete(_SCENES.active); });
 
-	$("#textboxOptionsModal select#bookOrientation").change(ev => {
-		this.setOrientation( ev.target.value );
-	});
+		$("#textboxOptionsModal select#bookOrientation").change(ev => {
+			this.setOrientation( ev.target.value );
+		});
+	}
 
 
-	this.setup = function() {
+	setup() {
 		$("#textbox").resizable({ // https://api.jqueryui.com/resizable/
 			containment: "#mapRow", handles: "e", minWidth: 100,
 			stop: (ev, ui) => {
@@ -103,23 +105,23 @@ export function Textboxes() {
 		});
 
 		_MAP.setOrientation("right");
-	};
+	}
 
-	this.reset = function() {
+	reset() {
 		$("#textbox").resizable("destroy");
 		$("#textbox #content").trumbowyg("destroy");
 		_MAP.setOrientation("right");
-	};
+	}
 
-	this.get = function(sceneId) {
+	get(sceneId) {
 		for(let i = 0; i < this.store.length; i++) {
 			let t = Object.assign({}, this.store[i]);
 			if(t.sceneId == sceneId) { t.index = i; return t; }
 		}
 		return null;
-	};
+	}
 
-	this.add = function() {
+	add() {
 		if(!_SCENES.active) { return; }
 
 		let t = new Textbox(null);
@@ -127,9 +129,9 @@ export function Textboxes() {
 		t.enable();
 		this.store.push(t);
 		save_data();
-	};
+	}
 
-	this.addScene = function(sceneId) {
+	addScene(sceneId) {
 		let prev = _SCENES.getPrevScene(sceneId);
 		if(prev) {
 			for(let t of this.store) {
@@ -145,46 +147,46 @@ export function Textboxes() {
 				}
 			}
 		}
-	};
+	}
 
-	this.delete = function(sceneId) {
+	delete(sceneId) {
 		let t = this.get(sceneId);
 		if(!t) { return; }
 
 		t.disable();
 		this.store.splice(t.index, 1);
 		save_data();
-	};
+	}
 
-	this.deleteScene = function(sceneId) {
+	deleteScene(sceneId) {
 		for(let t of this.store) {
 			if(t.sceneId == sceneId) { this.delete(t.sceneId); }
 		}
-	};
+	}
 
-	this.set = function(sceneId) {
+	set(sceneId) {
 		for(let t of this.store) {
 			if(t.sceneId == sceneId) { t.enable(); break; }
 			else{ t.disable(); }
 		}
-	};
+	}
 
-	this.setLock = function(l) {
+	setLock(l) {
 		let t = this.get(_SCENES.active);
 		if(!t) { return; }
 
 		this.store[ t.index ].setLock(l);
-	};
+	}
 
-	this.setOrientation = function(pos) {
+	setOrientation(pos) {
 		let t = this.get(_SCENES.active);
 		if(!t) { return; }
 
 		this.store[ t.index ].pos = pos;
 		this.store[ t.index ].setOrientation();
-	};
+	}
 
-	this.importData = function(data) {
+	importData(data) {
 		if(data.length <= 0) { return; }
 
 		for(let o of data) {
@@ -199,29 +201,31 @@ export function Textboxes() {
 
 			this.store.push(t);
 		}
-	};
+	}
 
-	this.exportData = function() {
+	exportData() {
 		let r = [];
 		for(let t of this.store) { r.push( t.exportData() ); }
 		return r;
-	};
+	}
 }
 
 
 
-function Textbox(id) {
-	this.id = id || uuid();
+class Textbox {
+	constructor(id) {
+		this.id = id || uuid();
 
-	this.sceneId = "";
-	this.locked = false;
+		this.sceneId = "";
+		this.locked = false;
 
-	this.pos = "left";
-	this.dim = [0, 0.25];
-	this.content = "";
+		this.pos = "left";
+		this.dim = [0, 0.25];
+		this.content = "";
+	}
 
 
-	this.setOrientation = function() {
+	setOrientation() {
 		switch(this.pos) {
 			case "left":
 				$("#textbox").css({ left: "10px", right: "auto" });
@@ -237,14 +241,14 @@ function Textbox(id) {
 
 			default: break;
 		}
-	};
+	}
 
-	this.setLock = function(l) {
+	setLock(l) {
 		this.locked = l;
 		$("#textbox input#lock").prop("checked", this.locked);
-	};
+	}
 
-	this.enable = function() {
+	enable() {
 		this.setOrientation();
 
 		$("#textbox").css("display", "block");
@@ -256,16 +260,16 @@ function Textbox(id) {
 		$("#textbox #lock").prop({ disabled: false, checked: this.locked });
 
 		_MAP.textboxButton.disable();
-	};
+	}
 
-	this.disable = function() {
+	disable() {
 		$("#textbox").css("display", "none");
 		$("#textbox #content").trumbowyg("disable");
 		$("#textbox #lock").prop("disabled", true);
 		_MAP.textboxButton.enable();
-	};
+	}
 
-	this.exportData = function() {
+	exportData() {
 		return {
 			id: this.id,
 			sceneId: this.sceneId,
@@ -274,5 +278,5 @@ function Textbox(id) {
 			dim: this.dim,
 			content: this.content
 		};
-	};
+	}
 }

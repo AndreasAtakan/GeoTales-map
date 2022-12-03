@@ -12,13 +12,15 @@ import { uuid, save_data, flash_map } from "./helpers.js";
 import { new_scene } from "./generate.js";
 
 
-export function Scenes() {
-	this.store = [];
-	this.active = "";
-	this.copiedBounds = null;
+export class Scenes {
+	constructor() {
+		this.store = [];
+		this.active = "";
+		this.copiedBounds = null;
+	}
 
 
-	this.setup = function() {
+	setup() {
 		$("#scenes").sortable({ // https://api.jqueryui.com/sortable/
 			cursor: "move", handle: "button#reorder", items: "> li", containment: "parent", tolerance: "pointer", cancel: "", zIndex: 1003, axis: "x", //scroll: false,
 			start: (ev, ui) => {
@@ -37,42 +39,42 @@ export function Scenes() {
 		});
 
 		$("#sceneRow button#delete, #sceneRow button#recapture").prop("disabled", false);
-	};
+	}
 
-	this.reset = function() {
+	reset() {
 		$("#scenes").sortable("destroy");
 		$("#sceneRow button#delete, #sceneRow button#recapture").prop("disabled", true);
-	};
+	}
 
-	this.get = function(id) {
+	get(id) {
 		for(let i = 0; i < this.store.length; i++) {
 			let s = Object.assign({}, this.store[i]);
 			if(s.id == id) { s.index = i; return s; }
 		}
 		return null;
-	};
+	}
 
-	this.getEl = function(el) {
+	getEl(el) {
 		for(let i = 0; i < this.store.length; i++) {
 			let s = Object.assign({}, this.store[i]);
 			if( $(`li[data-id="${s.id}"]`)[0].contains(el) ) { s.index = i; return s; }
 		}
 		return null;
-	};
+	}
 
-	this.getPrevScene = function(id) {
+	getPrevScene(id) {
 		let s = this.get(id);
 		if(!s || s.index <= 0) { return; }
 
 		return Object.assign({}, this.store[ s.index - 1 ]);
-	};
+	}
 
-	this.reorder = function(order) {
+	reorder(order) {
 		this.store.sort((a,b) => order.indexOf(a.id) - order.indexOf(b.id));
 		this.set(this.active);
-	};
+	}
 
-	this.add = function() {
+	add() {
 		if(this.store.length <= 0) {
 			document.dispatchEvent( new Event("_setup") );
 		}
@@ -90,18 +92,18 @@ export function Scenes() {
 		this.bind();
 
 		save_data();
-	};
+	}
 
-	this.capture = function() {
+	capture() {
 		if(!this.active) { return; }
 
 		let s = this.store[ this.get(this.active).index ];
 		s.capture();
 		flash_map();
 		save_data();
-	};
+	}
 
-	this.delete = function() {
+	delete() {
 		if(!this.active) { return; }
 
 		let s = this.get( this.active );
@@ -123,13 +125,13 @@ export function Scenes() {
 		}
 
 		save_data();
-	};
+	}
 
-	this.unbind = function() {
+	unbind() {
 		$("#scenes li button#reorder").prop("disabled", true);
 		$("#scenes li").off("click");
-	};
-	this.bind = function() {
+	}
+	bind() {
 		$("#scenes li button#reorder").prop("disabled", false);
 		$("#scenes li").off("click");
 		$("#scenes li").click(ev => {
@@ -141,32 +143,32 @@ export function Scenes() {
 
 			this.set(s.id);
 		});
-	};
+	}
 
-	this.prev = function() {
+	prev() {
 		let s = this.get(this.active);
 		if(!s || s.index <= 0) { return; }
 
 		s = this.store[ s.index - 1 ];
 		this.set(s.id);
 		return Object.assign({}, s);
-	};
+	}
 
-	this.current = function() {
+	current() {
 		this.set(this.active);
 		this.bind();
-	};
+	}
 
-	this.next = function() {
+	next() {
 		let s = this.get(this.active);
 		if(!s || s.index >= this.store.length - 1) { return; }
 
 		s = this.store[ s.index + 1 ];
 		this.set(s.id);
 		return Object.assign({}, s);
-	};
+	}
 
-	this.set = function(id) {
+	set(id) {
 		if(this.active) { this.get(this.active).disable(); }
 		this.active = id;
 
@@ -179,44 +181,44 @@ export function Scenes() {
 		_MAP.set(s.id);
 
 		this.setNumbering();
-	};
+	}
 
-	this.setWMS = function() {
+	setWMS() {
 		this.store[ this.get(this.active).index ].setWMS();
-	};
-	this.setBasemap = function() {
+	}
+	setBasemap() {
 		this.store[ this.get(this.active).index ].setBasemap();
-	};
+	}
 
-	this.setBookmark = function(b) {
+	setBookmark(b) {
 		if(!this.active) { return; }
 
 		let s = this.store[ this.get(this.active).index ];
 		s.setBookmark(b);
 		save_data();
-	};
+	}
 
-	this.setNumbering = function() {
+	setNumbering() {
 		let i = 1;
 		for(let n of $("#scenes li span#num")) {
 			$(n).html(i++);
 		}
-	};
+	}
 
-	this.copyBounds = function() {
+	copyBounds() {
 		if(!this.active) { return; }
 
 		this.copiedBounds = this.get(this.active).bounds;
-	};
+	}
 
-	this.pasteBounds = function() {
+	pasteBounds() {
 		if(!this.active) { return; }
 
 		let s = this.store[ this.get(this.active).index ];
 		s.setBounds(this.copiedBounds);
-	};
+	}
 
-	this.importData = function(data) {
+	importData(data) {
 		if(data.length <= 0) { return; }
 
 		if(this.store.length <= 0 || !this.active) {
@@ -236,72 +238,74 @@ export function Scenes() {
 
 			this.store.push(s);
 		}
-	};
+	}
 
-	this.exportData = function() {
+	exportData() {
 		let r = [];
 		for(let s of this.store) { r.push( s.exportData() ); }
 		return r;
-	};
+	}
 }
 
 
 
-function Scene(id, prevId) {
-	this.id = id || uuid();
+class Scene {
+	constructor(id, prevId) {
+		this.id = id || uuid();
 
-	this.bounds = null;
-	this.wms = null;
-	this.basemap = null;
+		this.bounds = null;
+		this.wms = null;
+		this.basemap = null;
 
-	this.bookmark = false;
-	this.title = "";
+		this.bookmark = false;
+		this.title = "";
 
-	new_scene(this.id, prevId);
+		new_scene(this.id, prevId);
 
-	$(`li[data-id="${this.id}"]`).on("keydown keyup", ev => { ev.stopPropagation(); });
-	$(`li[data-id="${this.id}"] input#title`).change(ev => { this.title = ev.target.value; });
+		$(`li[data-id="${this.id}"]`).on("keydown keyup", ev => { ev.stopPropagation(); });
+		$(`li[data-id="${this.id}"] input#title`).change(ev => { this.title = ev.target.value; });
+	}
 
 
-	this.enable = function() {
+	enable() {
 		$(`li[data-id="${this.id}"]`).addClass("active");
 		$(`li[data-id="${this.id}"] input, li[data-id="${this.id}"] button`).prop("disabled", false);
 		$(`li[data-id="${this.id}"] input, li[data-id="${this.id}"] button`).click(ev => { ev.stopPropagation(); });
-	};
+	}
 
-	this.disable = function() {
+	disable() {
 		$(`li[data-id="${this.id}"]`).removeClass("active");
 		$(`li[data-id="${this.id}"] input`).prop("disabled", true);
 		$(`li[data-id="${this.id}"] input, li[data-id="${this.id}"] button`).off("click");
-	};
+	}
 
-	this.setBounds = function(bounds) {
+	setBounds(bounds) {
 		this.bounds = bounds;
 		_MAP.setFlyTo( this.bounds );
-	};
+	}
 
-	this.setWMS = function() { this.wms = _MAP.getWMS(); };
-	this.setBasemap = function() { this.basemap = _MAP.getBasemap(); };
+	setWMS() { this.wms = _MAP.getWMS(); }
+	setBasemap() { this.basemap = _MAP.getBasemap(); }
 
-	this.setBookmark = function(b) {
+	setBookmark(b) {
 		this.bookmark = b;
 		if(b) { $(`li[data-id="${this.id}"]`).addClass("bookmark"); }
 		else{ $(`li[data-id="${this.id}"]`).removeClass("bookmark"); }
-	};
+	}
 
-	this.setTitle = function(t) {
+	setTitle(t) {
 		this.title = t;
 		$(`li[data-id="${this.id}"] input#title`).val(this.title);
-	};
+	}
 
-	this.capture = function() {
+	capture() {
 		let nw = _MAP.getBounds().getNorthWest(),
 			se = _MAP.getBounds().getSouthEast();
 		this.setBounds( [[nw.lat, nw.lng], [se.lat, se.lng]] );
 		this.setBasemap();
-	};
+	}
 
-	this.exportData = function() {
+	exportData() {
 		return {
 			id: this.id,
 			bounds: this.bounds,
@@ -310,5 +314,5 @@ function Scene(id, prevId) {
 			bookmark: this.bookmark,
 			title: this.title
 		};
-	};
+	}
 }
