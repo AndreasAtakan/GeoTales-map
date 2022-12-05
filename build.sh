@@ -1,7 +1,10 @@
 #!/bin/sh
 
 NOW=$(date +%s)
+echo $NOW
+exit 0
 
+# REWRITE THIS
 rm ../assets/main_*.js* ../assets/main_*.css
 cp edit/css/main.css ../assets/main_edit_$NOW.css
 cp pres/css/main.css ../assets/main_pres_$NOW.css

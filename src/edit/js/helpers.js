@@ -198,7 +198,8 @@ export function export_data(type) {
 }
 
 export function save_data(callback) {
-	/*$.ajax({
+	return;
+	$.ajax({
 		type: "POST",
 		url: "api/map_write.php",
 		data: {
@@ -215,7 +216,7 @@ export function save_data(callback) {
 			console.error(xhr.status, error);
 			setTimeout(function() { $("#loadingModal").modal("hide"); $("#errorModal").modal("show"); }, 750);
 		}
-	});*/
+	});
 }
 
 
@@ -276,9 +277,6 @@ export function init_img_basemaps() {
 
 export function get_aspect_ratio_dimentions(w, h, r) {
 	let _w = r * h;
-	if(_w <= w) {
-		return [_w, h];
-	}else{
-		return [w, w / r];
-	}
+	if(_w <= w) { return [_w, h]; }
+	else { return [w, w / r]; }
 }
