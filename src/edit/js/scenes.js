@@ -19,7 +19,6 @@ export class Scenes {
 		this.copiedBounds = null;
 	}
 
-
 	setup() {
 		$("#scenes").sortable({ // https://api.jqueryui.com/sortable/
 			cursor: "move", handle: "button#reorder", items: "> li", containment: "parent", tolerance: "pointer", cancel: "", zIndex: 1003, axis: "x", //scroll: false,

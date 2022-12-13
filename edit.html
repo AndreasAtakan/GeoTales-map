@@ -590,8 +590,10 @@
 
 			const _ID = "[id]",
 				  _TITLE = "[title]",
-				  _HOST = window.location.host,
 				  _USER_PHOTO = "[photo]",
+				  // FIXME: This has to be implemented differently, otherwise a
+				  //        user could just set this variable in their browser
+				  //        to make it look like they've paid for WMS-layers.
 				  _USER_PAID = true;
 
 			$(`#geojsonImportModal button#import,

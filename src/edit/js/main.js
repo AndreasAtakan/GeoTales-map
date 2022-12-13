@@ -20,7 +20,7 @@ import {
 
 import { Scenes } from "./scenes.js";
 import { Textboxes } from "./textboxes.js";
-import { MMap } from "./map.js";
+import { MMap } from "./map";
 
 
 window.onload = function(ev) {

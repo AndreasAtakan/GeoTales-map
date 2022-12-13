@@ -41,7 +41,7 @@ window.onload = function(ev) {
 			$(".leaflet-control.leaflet-bar, #sceneNav").css("opacity", v || 0);
 			$("#textbox").css("bottom", `${v ? "58" : "10"}px`);
 		};
-	$(window).on("mousemove touchmove", function() {
+	$(window).on("mousemove touchmove", function () {
 		btnToggle(0.8); clearTimeout(btnTimer);
 		btnTimer = setTimeout(btnToggle, 5000);
 	});
@@ -51,7 +51,11 @@ window.onload = function(ev) {
 
 	_SCENES = new Scenes();
 
-	$(document).keydown(ev => { if(["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft", "Space"].indexOf(ev.code) > -1) { ev.preventDefault(); } });
+	$(document).keydown(ev => {
+		if (["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft", "Space"].indexOf(ev.code) > -1) {
+			ev.preventDefault();
+		}
+	});
 	$(document).keyup(ev => {
 		let keycode = ev.code;
 

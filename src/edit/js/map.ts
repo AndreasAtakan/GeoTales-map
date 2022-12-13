@@ -12,28 +12,43 @@ import { uuid, save_data, init_img_basemaps } from "./helpers.js";
 //import { avatar_popup, polyline_popup, polygon_popup } from "./generate.js";
 //import { bind_setup } from "./layers.js";
 
-import mapboxgl from "mapbox-gl";
+import mapboxgl, { FreeCameraOptions } from "mapbox-gl";
+import consts from "./consts";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import FreehandMode from "mapbox-gl-draw-freehand-mode";
 //import FreehandLine from "./map/FreehandLine.js";
 
 import { HomeControl, BasemapControl, AvatarControl, TextboxControl } from "./map/CustomControls.js";
-
+import { Scenes } from "./scenes.js";
 
 mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmVhc2F0YWthbiIsImEiOiJja3dqbGlham0xMDAxMnhwazkydDRrbDRwIn0.zQJIqHf0Trp--7GHLc4ySg";
 
 export class MMap {
+	map: mapboxgl.Map;
+	draw: MapboxDraw;
+	vp: FreeCameraOptions | null;
+
 	constructor() {
 		this.map = new mapboxgl.Map({
 			container: "map",
-			style: "mapbox://styles/mapbox/streets-v12",
-			customAttribution: `&copy; <a href=\"https://${_HOST}/\" target=\"_blank\">GeoTales</a>`,
-			projection: "mercator",
+			style: "mapbox://styles/mapbox/dark-v11",
+			customAttribution: `&copy; <a href=\"https://${consts.HOST}/\" target=\"_blank\">GeoTales</a>`,
+			projection: {name: "globe"},
 			center: [ 14, 49 ],
 			zoom: window.innerWidth < 575.98 ? 3 : 4,
 			doubleClickZoom: false,
 			keyboard: false
 		});
+
+		this.map.on('mousemove', (e) => {
+			const fts = this.map.queryRenderedFeatures(e.point);
+			// for (let ft of fts) {
+			//     if (ft.)
+			// }
+			console.log("moving the mouse");
+			console.log(fts);
+			console.log(this.map.getFreeCameraOptions());
+		})
 
 		this.map.addControl( HomeControl({
 			eventHandler: ev => { this.zoomHome(); }
@@ -77,14 +92,34 @@ export class MMap {
 	}
 
 	setup() {
-		//
+		// TODO
 	}
 
 	reset() {
-		//
+		// TODO
+	}
+
+	/// Interpolate camera movement to new `vp` camera options
+	camInterp(vp: FreeCameraOptions) {
+		this.vp = vp;
+		// TODO: Mapbox doesn't handle this for us, so we actually need to do
+		// some work here. But there is some example code out there for how to do
+		// this interpolation, you could also browse the documentation for
+		// combinations of animation functions that would accomplish the same thing
+		this.map.setFreeCameraOptions(vp);
 	}
 
 	zoomHome() {
-		if(_SCENES.active) { this.map.fitBounds( _SCENES.get( _SCENES.active ).bounds ); }
+		if (this.vp) {
+			this.camInterp(this.vp)
+		}
+	}
+
+	setBasemap(map) {
+		// TODO
+	}
+
+	setWMS(wms) {
+		// TODO
 	}
 }
