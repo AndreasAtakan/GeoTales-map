@@ -183,7 +183,7 @@ export class Prez {
             //                                  [0.5, 0.1, 0.9, 1.0]);
             const vp = new FreeCameraOptions([0.5388888888888889, 0.34342211400089906, 0.06754758580881544],
                                              [-0.25, 0, 0, 1]);
-            await this.map.goto(vp, 10.0);
+            await this.map.goto(vp, 1.0);
         });
     }
 };

@@ -36,7 +36,7 @@ function mercatorToVec(coord: MercatorCoordinate | undefined): number[] {
 const QUAT_ZERO = [0, 0, 0, 1];
 
 function lerp(u: number[], v: number[], alpha: number): number[] {
-	let vo = [];
+	let vo: number[] = [];
 	for (let i = 0; i < Math.min(u.length, v.length); i++) {
 		vo.push(u[i] * (1.0 - alpha) + v[i] * alpha);
 	}
@@ -161,10 +161,10 @@ export class MMap extends mapboxgl.Map {
 		return new Promise((resolve, _) => {
 			let last_time = null;
 			const advanceFrame = (time) => {
-				time /= 10000;
+				time /= 1000;
 
-				if (!last_time) last_time = time;
-				let dt = time - last_time;
+				let dt = time - (last_time ? last_time : time);
+				last_time = time;
 
 				const frame = interp.step(dt);
 				if (frame) {
