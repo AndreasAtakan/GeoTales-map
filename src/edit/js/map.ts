@@ -92,13 +92,13 @@ class CamInterpolation {
 	}
 }
 
-export class MMap {
+export class MMap extends mapboxgl.Map {
 	map: mapboxgl.Map;
 	draw: MapboxDraw;
 	vp: FreeCameraOptions | null;
 
 	constructor() {
-		this.map = new mapboxgl.Map({
+		super({
 			container: "map",
 			style: "mapbox://styles/mapbox/dark-v11",
 			customAttribution: `&copy; <a href=\"https://${consts.HOST}/\" target=\"_blank\">GeoTales</a>`,
@@ -109,33 +109,33 @@ export class MMap {
 			keyboard: false
 		});
 
-		this.map.on('mousemove', (e) => {
-			const fts = this.map.queryRenderedFeatures(e.point);
+		this.on('mousemove', (e) => {
+			const fts = this.queryRenderedFeatures(e.point);
 			// for (let ft of fts) {
 			//     if (ft.)
 			// }
 			console.log("moving the mouse");
 			console.log(fts);
-			console.log(this.map.getFreeCameraOptions());
+			console.log(this.getFreeCameraOptions());
 		})
 
-		this.map.addControl( HomeControl({
+		this.addControl( HomeControl({
 			eventHandler: ev => { this.zoomHome(); }
 		}), "bottom-right" );
 
-		this.map.addControl(new mapboxgl.NavigationControl({
+		this.addControl(new mapboxgl.NavigationControl({
 			showCompass: false
 		}), "bottom-right");
 
-		this.map.addControl( BasemapControl({
+		this.addControl( BasemapControl({
 			eventHandler: ev => { $("#basemapModal").modal("show"); init_img_basemaps(); }
 		}), "bottom-right" );
 
-		this.map.addControl( TextboxControl({
+		this.addControl( TextboxControl({
 			eventHandler: ev => { _TEXTBOXES.add(); }
 		}), "top-left" );
 
-		//this.map.addControl(new mapboxgl.FullscreenControl());
+		//this.addControl(new mapboxgl.FullscreenControl());
 
 
 		this.draw = new MapboxDraw({
@@ -149,13 +149,13 @@ export class MMap {
 			})
 		});
 
-		this.map.addControl(this.draw, "top-right");
-		this.map.addControl( new AvatarControl({
+		this.addControl(this.draw, "top-right");
+		this.addControl( new AvatarControl({
 			eventHandler: ev => { console.log("test"); }
 		}), "top-right" );
 
 
-		this.map.on("load", ev => {
+		this.on("load", ev => {
 			//
 		});
 	}
@@ -171,7 +171,7 @@ export class MMap {
 	/// Interpolate camera movement to new `vp` camera options
 	camInterp(vp: FreeCameraOptions, secs: number) {
 		this.vp = vp;
-		const pvp = this.map.getFreeCameraOptions();
+		const pvp = this.getFreeCameraOptions();
 		const interp = new CamInterpolation(pvp, vp, secs);
 
 		let last_time = null;
@@ -183,10 +183,10 @@ export class MMap {
 
 			const frame = interp.step(dt);
 			if (frame) {
-				frame.set(this.map);
+				frame.set(this);
 				window.requestAnimationFrame(advanceFrame);
 			} else {
-				this.map.setFreeCameraOptions(vp);
+				this.setFreeCameraOptions(vp);
 			}
 		};
 

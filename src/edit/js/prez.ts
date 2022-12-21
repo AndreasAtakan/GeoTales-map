@@ -121,7 +121,6 @@ export class Prez {
         });
 
 
-
         $("#projectFileInput").change(ev => {
             let file = $(ev.target)[0].files[0];
             if (!file) { return; }
@@ -176,7 +175,7 @@ export class Prez {
         });
         setInterval(save_data, 5 * 60 * 1000);
 
-        this.map.map.once("idle", () => {
+        this.map.once("idle", () => {
             // 0.5388888888888889, 0.34342211400089906, 0.06754758580881544
             // const vp = new FreeCameraOptions([0.2, 0.2, 0.1],
             //                                  [0.0, 1.2, 0.3, 0.5]);
