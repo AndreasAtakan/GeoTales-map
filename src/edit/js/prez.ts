@@ -176,7 +176,9 @@ export class Prez {
         });
         setInterval(save_data, 5 * 60 * 1000);
 
-        const vp = new FreeCameraOptions([0.2, 0.2, 1.0]);
-        this.map.camInterp(vp, 1.0);
+        this.map.map.once("idle", () => {
+            const vp = new FreeCameraOptions([0.2, 0.2, 1.0]);
+            this.map.camInterp(vp, 10.0);
+        });
     }
 };

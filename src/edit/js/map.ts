@@ -33,6 +33,7 @@ class CamFrame {
 	}
 
 	set(map: Map) {
+		map.setFreeCameraOptions(new FreeCameraOptions(this.pos));
 	}
 }
 
@@ -152,15 +153,27 @@ export class MMap {
 	camInterp(vp: FreeCameraOptions, secs: number) {
 		console.log("cam interp ...");
 		this.vp = vp;
-		// TODO: Mapbox doesn't handle this for us, so we actually need to do
-		// some work here. But there is some example code out there for how to do
-		// this interpolation, you could also browse the documentation for
-		// combinations of animation functions that would accomplish the same thing
 		const pvp = this.map.getFreeCameraOptions();
-		this.map.setFreeCameraOptions(vp);
 		const interp = new CamInterpolation(pvp, vp, secs);
-		const frame = interp.step(0.5);
-		frame.set(this.map);
+
+		let last_time = 0;
+		const advanceFrame = (time) => {
+			time /= 1000;
+			if (last_time == 0) last_time = time;
+			let dt = time - last_time;
+
+			console.log(`frame! ${dt}`);
+
+			const frame = interp.step(dt);
+			if (frame) {
+				frame.set(this.map);
+				window.requestAnimationFrame(advanceFrame);
+			} else {
+				this.map.setFreeCameraOptions(vp);
+			}
+		};
+
+		window.requestAnimationFrame(advanceFrame);
 	}
 
 	zoomHome(secs: number) {
