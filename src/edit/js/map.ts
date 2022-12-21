@@ -58,6 +58,10 @@ function lerp(u: number[], v: number[], alpha: number): number[] {
 	return vo;
 }
 
+function bblend(t: number) {
+	return t*t*(3 - 2*t);
+}
+
 class CamInterpolation {
 	ppos: number[];
 	pquat: number[];
@@ -80,7 +84,7 @@ class CamInterpolation {
 	step(dt: number): CamFrame | null {
 		if ((this.t += dt) >= this.max_t) return null;
 
-		const alpha = this.t / this.max_t;
+		const alpha = bblend(this.t / this.max_t);
 		let pos = lerp(this.ppos, this.pos, alpha);
 		let quat = lerp(this.pquat, this.quat, alpha);
 
