@@ -97,12 +97,10 @@ export class MMap extends mapboxgl.Map {
 
 		this.on('mousemove', (e) => {
 			const fts = this.queryRenderedFeatures(e.point);
-			// for (let ft of fts) {
-			//     if (ft.)
-			// }
-			console.log("moving the mouse");
-			console.log(fts);
-			console.log(this.getFreeCameraOptions());
+			console.log("Features at point");
+			for (let ft of fts) {
+				console.log(ft);
+			}
 		})
 
 		this.addControl( HomeControl({
@@ -174,12 +172,11 @@ export class MMap extends mapboxgl.Map {
 					window.requestAnimationFrame(advanceFrame);
 				} else {
 					this.setFreeCameraOptions(vp);
-					resolve(undefined);
+					return resolve(undefined);
 				}
-				window.requestAnimationFrame(advanceFrame);
 			};
 			window.requestAnimationFrame(advanceFrame);
-		})
+		});
 	}
 
 	async zoomHome(secs: number) {
