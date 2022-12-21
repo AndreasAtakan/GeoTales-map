@@ -170,11 +170,9 @@ export class MMap {
 
 	/// Interpolate camera movement to new `vp` camera options
 	camInterp(vp: FreeCameraOptions, secs: number) {
-		console.log("cam interp ...");
 		this.vp = vp;
 		const pvp = this.map.getFreeCameraOptions();
 		const interp = new CamInterpolation(pvp, vp, secs);
-		console.log(interp);
 
 		let last_time = null;
 		const advanceFrame = (time) => {
