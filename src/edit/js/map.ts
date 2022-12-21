@@ -23,25 +23,10 @@ import { Scenes } from "./scenes.js";
 
 mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmVhc2F0YWthbiIsImEiOiJja3dqbGlham0xMDAxMnhwazkydDRrbDRwIn0.zQJIqHf0Trp--7GHLc4ySg";
 
-class CamFrame {
-	pos: number[];
-	quat: number[];
+function mercatorToVec(coord: MercatorCoordinate | undefined): number[] {
+	if (!coord) return [0, 0, 0]
 
-	// TODO: Angle
-
-	constructor(pos: number[], quat: number[]) {
-		this.pos = pos;
-		this.quat = quat;
-	}
-
-	set(map: Map) {
-		const opts = new FreeCameraOptions(this.pos, this.quat);
-		map.setFreeCameraOptions(opts);
-	}
-}
-
-function mercatorToVec(coord: MercatorCoordinate): number[] {
-	if (coord.z) {
+	if (coord?.z) {
 		return [ coord.x, coord.y, coord.z ]
 	} else {
 		return [ coord.x, coord.y ]
@@ -81,19 +66,20 @@ class CamInterpolation {
 		this.max_t = secs;
 	}
 
-	step(dt: number): CamFrame | null {
+	step(dt: number): FreeCameraOptions | null {
 		if ((this.t += dt) >= this.max_t) return null;
 
 		const alpha = bblend(this.t / this.max_t);
 		let pos = lerp(this.ppos, this.pos, alpha);
 		let quat = lerp(this.pquat, this.quat, alpha);
 
-		return new CamFrame(pos, quat);
+		// return new CamFrame(pos, quat);
+		return new FreeCameraOptions(new MercatorCoordinate(pos[0], pos[1], pos[2]),
+									 quat);
 	}
 }
 
 export class MMap extends mapboxgl.Map {
-	map: mapboxgl.Map;
 	draw: MapboxDraw;
 	vp: FreeCameraOptions | null;
 
@@ -169,33 +155,36 @@ export class MMap extends mapboxgl.Map {
 	}
 
 	/// Interpolate camera movement to new `vp` camera options
-	camInterp(vp: FreeCameraOptions, secs: number) {
+	async goto(vp: FreeCameraOptions, secs: number) {
 		this.vp = vp;
 		const pvp = this.getFreeCameraOptions();
 		const interp = new CamInterpolation(pvp, vp, secs);
 
-		let last_time = null;
-		const advanceFrame = (time) => {
-			time /= 10000;
+		return new Promise((resolve, _) => {
+			let last_time = null;
+			const advanceFrame = (time) => {
+				time /= 10000;
 
-			if (!last_time) last_time = time;
-			let dt = time - last_time;
+				if (!last_time) last_time = time;
+				let dt = time - last_time;
 
-			const frame = interp.step(dt);
-			if (frame) {
-				frame.set(this);
+				const frame = interp.step(dt);
+				if (frame) {
+					this.setFreeCameraOptions(frame);
+					window.requestAnimationFrame(advanceFrame);
+				} else {
+					this.setFreeCameraOptions(vp);
+					resolve(undefined);
+				}
 				window.requestAnimationFrame(advanceFrame);
-			} else {
-				this.setFreeCameraOptions(vp);
-			}
-		};
-
-		window.requestAnimationFrame(advanceFrame);
+			};
+			window.requestAnimationFrame(advanceFrame);
+		})
 	}
 
-	zoomHome(secs: number) {
+	async zoomHome(secs: number) {
 		if (this.vp) {
-			this.camInterp(this.vp, secs)
+			await this.goto(this.vp, secs)
 		}
 	}
 

@@ -175,7 +175,7 @@ export class Prez {
         });
         setInterval(save_data, 5 * 60 * 1000);
 
-        this.map.once("idle", () => {
+        this.map.once("idle", async () => {
             // 0.5388888888888889, 0.34342211400089906, 0.06754758580881544
             // const vp = new FreeCameraOptions([0.2, 0.2, 0.1],
             //                                  [0.0, 1.2, 0.3, 0.5]);
@@ -183,7 +183,7 @@ export class Prez {
             //                                  [0.5, 0.1, 0.9, 1.0]);
             const vp = new FreeCameraOptions([0.5388888888888889, 0.34342211400089906, 0.06754758580881544],
                                              [-0.25, 0, 0, 1]);
-            this.map.camInterp(vp, 10.0);
+            await this.map.goto(vp, 10.0);
         });
     }
 };
