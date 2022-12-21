@@ -4,6 +4,7 @@ import { Textboxes } from "./textboxes";
 import $ from 'jquery';
 import { export_data, import_data, init_basemaps, save_data } from "./helpers";
 import { FreeCameraOptions } from "mapbox-gl";
+import { TextboxControl } from "./map/CustomControls";
 
 export class Prez {
     map: MMap;
@@ -14,6 +15,16 @@ export class Prez {
         let scenes = this.scenes = new Scenes();
         let textboxes = this.textboxes = new Textboxes();
         let map = this.map = new MMap();
+
+        // FIXME: Temporary workaround for code that expects these to exist
+        let GLOBALS = window as any;
+        GLOBALS._TEXTBOXES = textboxes;
+        GLOBALS._MAP = map;
+        GLOBALS._SCENES = scenes;
+
+        map.addControl(TextboxControl({
+            eventHandler: _ev => { textboxes.add(); }
+        }), "top-left");
 
         let scene_row = document.getElementById("sceneRow") as HTMLDivElement;
         scene_row.onkeydown = ev => { if (["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft", "Space"].indexOf(ev.code) > -1) { ev.preventDefault(); } };

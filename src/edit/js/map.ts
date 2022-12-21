@@ -73,7 +73,6 @@ class CamInterpolation {
 		let pos = lerp(this.ppos, this.pos, alpha);
 		let quat = lerp(this.pquat, this.quat, alpha);
 
-		// return new CamFrame(pos, quat);
 		return new FreeCameraOptions(new MercatorCoordinate(pos[0], pos[1], pos[2]),
 									 quat);
 	}
@@ -104,7 +103,7 @@ export class MMap extends mapboxgl.Map {
 		})
 
 		this.addControl( HomeControl({
-			eventHandler: ev => { this.zoomHome(); }
+			eventHandler: ev => { this.zoomHome(1.0); }
 		}), "bottom-right" );
 
 		this.addControl(new mapboxgl.NavigationControl({
@@ -114,10 +113,6 @@ export class MMap extends mapboxgl.Map {
 		this.addControl( BasemapControl({
 			eventHandler: ev => { $("#basemapModal").modal("show"); init_img_basemaps(); }
 		}), "bottom-right" );
-
-		this.addControl( TextboxControl({
-			eventHandler: ev => { _TEXTBOXES.add(); }
-		}), "top-left" );
 
 		//this.addControl(new mapboxgl.FullscreenControl());
 
