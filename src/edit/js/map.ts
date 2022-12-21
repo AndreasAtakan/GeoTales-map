@@ -172,7 +172,7 @@ export class MMap extends mapboxgl.Map {
 					window.requestAnimationFrame(advanceFrame);
 				} else {
 					this.setFreeCameraOptions(vp);
-					return resolve(undefined);
+					resolve(undefined);
 				}
 			};
 			window.requestAnimationFrame(advanceFrame);
