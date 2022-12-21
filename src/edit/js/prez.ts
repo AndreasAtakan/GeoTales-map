@@ -11,8 +11,6 @@ export class Prez {
     textboxes: Textboxes;
 
     constructor() {
-        console.log("prez init ...");
-
         let scenes = this.scenes = new Scenes();
         let textboxes = this.textboxes = new Textboxes();
         let map = this.map = new MMap();
