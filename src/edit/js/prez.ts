@@ -3,6 +3,7 @@ import { Scenes } from "./scenes";
 import { Textboxes } from "./textboxes";
 import $ from 'jquery';
 import { export_data, import_data, init_basemaps, save_data } from "./helpers";
+import { FreeCameraOptions } from "mapbox-gl";
 
 export class Prez {
     map: MMap;
@@ -10,6 +11,8 @@ export class Prez {
     textboxes: Textboxes;
 
     constructor() {
+        console.log("prez init ...");
+
         let scenes = this.scenes = new Scenes();
         let textboxes = this.textboxes = new Textboxes();
         let map = this.map = new MMap();
@@ -172,5 +175,8 @@ export class Prez {
             save_data(function () { $("#loadingModal").modal("hide"); });
         });
         setInterval(save_data, 5 * 60 * 1000);
+
+        const vp = new FreeCameraOptions([0.2, 0.2, 1.0]);
+        this.map.camInterp(vp, 1.0);
     }
 };

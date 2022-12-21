@@ -12,7 +12,7 @@ import { uuid, save_data, init_img_basemaps } from "./helpers.js";
 //import { avatar_popup, polyline_popup, polygon_popup } from "./generate.js";
 //import { bind_setup } from "./layers.js";
 
-import mapboxgl, { FreeCameraOptions } from "mapbox-gl";
+import mapboxgl, { FreeCameraOptions, Map, MercatorCoordinate } from "mapbox-gl";
 import consts from "./consts";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import FreehandMode from "mapbox-gl-draw-freehand-mode";
@@ -22,6 +22,55 @@ import { HomeControl, BasemapControl, AvatarControl, TextboxControl } from "./ma
 import { Scenes } from "./scenes.js";
 
 mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmVhc2F0YWthbiIsImEiOiJja3dqbGlham0xMDAxMnhwazkydDRrbDRwIn0.zQJIqHf0Trp--7GHLc4ySg";
+
+class CamFrame {
+	pos: number[]
+
+	// TODO: Angle
+
+	constructor(pos: number[]) {
+		this.pos = pos;
+	}
+
+	set(map: Map) {
+	}
+}
+
+function mercatorToVec(coord: MercatorCoordinate): number[] {
+	if (coord.z) {
+		return [ coord.x, coord.y, coord.z ]
+	} else {
+		return [ coord.x, coord.y ]
+	}
+}
+
+class CamInterpolation {
+	ppos: number[];
+	pos: number[];
+	t: number;
+	max_t: number;
+
+	constructor(pvp: FreeCameraOptions, vp: FreeCameraOptions, secs: number) {
+		this.ppos = mercatorToVec(pvp.position);
+		this.pos = mercatorToVec(vp.position);
+		this.t = 0;
+		this.max_t = secs;
+	}
+
+	step(dt: number): CamFrame | null {
+		if ((this.t += dt) >= this.max_t) return null;
+
+		const alpha = this.t / this.max_t;
+		let pos = [];
+		for (let i = 0; i < this.ppos.length; i++) {
+			pos.push(this.ppos[i] * (1.0 - alpha) + this.pos[i] * alpha);
+		}
+
+		// TODO: Angle
+
+		return new CamFrame(pos);
+	}
+}
 
 export class MMap {
 	map: mapboxgl.Map;
@@ -100,18 +149,23 @@ export class MMap {
 	}
 
 	/// Interpolate camera movement to new `vp` camera options
-	camInterp(vp: FreeCameraOptions) {
+	camInterp(vp: FreeCameraOptions, secs: number) {
+		console.log("cam interp ...");
 		this.vp = vp;
 		// TODO: Mapbox doesn't handle this for us, so we actually need to do
 		// some work here. But there is some example code out there for how to do
 		// this interpolation, you could also browse the documentation for
 		// combinations of animation functions that would accomplish the same thing
+		const pvp = this.map.getFreeCameraOptions();
 		this.map.setFreeCameraOptions(vp);
+		const interp = new CamInterpolation(pvp, vp, secs);
+		const frame = interp.step(0.5);
+		frame.set(this.map);
 	}
 
-	zoomHome() {
+	zoomHome(secs: number) {
 		if (this.vp) {
-			this.camInterp(this.vp)
+			this.camInterp(this.vp, secs)
 		}
 	}
 
