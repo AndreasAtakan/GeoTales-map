@@ -3,7 +3,7 @@
 *                                                                              *
 * Unauthorized copying of this file, via any medium is strictly prohibited     *
 * Proprietary and confidential                                                 *
-* Written by Andreas Atakan <aca@geotales.io>, January 2022                    *
+* Written by Jonas Møller <jonas@moesys.no>, December 2022                     *
 *******************************************************************************/
 
 "use strict";
@@ -24,16 +24,19 @@ import { Scenes } from "./scenes.js";
 mapboxgl.accessToken = "pk.eyJ1IjoiYW5kcmVhc2F0YWthbiIsImEiOiJja3dqbGlham0xMDAxMnhwazkydDRrbDRwIn0.zQJIqHf0Trp--7GHLc4ySg";
 
 class CamFrame {
-	pos: number[]
+	pos: number[];
+	quat: number[];
 
 	// TODO: Angle
 
-	constructor(pos: number[]) {
+	constructor(pos: number[], quat: number[]) {
 		this.pos = pos;
+		this.quat = quat;
 	}
 
 	set(map: Map) {
-		map.setFreeCameraOptions(new FreeCameraOptions(this.pos));
+		const opts = new FreeCameraOptions(this.pos, this.quat);
+		map.setFreeCameraOptions(opts);
 	}
 }
 
@@ -45,15 +48,31 @@ function mercatorToVec(coord: MercatorCoordinate): number[] {
 	}
 }
 
+const QUAT_ZERO = [0, 0, 0, 1];
+
+function lerp(u: number[], v: number[], alpha: number): number[] {
+	let vo = [];
+	for (let i = 0; i < Math.min(u.length, v.length); i++) {
+		vo.push(u[i] * (1.0 - alpha) + v[i] * alpha);
+	}
+	return vo;
+}
+
 class CamInterpolation {
 	ppos: number[];
+	pquat: number[];
 	pos: number[];
+	quat: number[];
 	t: number;
 	max_t: number;
 
 	constructor(pvp: FreeCameraOptions, vp: FreeCameraOptions, secs: number) {
 		this.ppos = mercatorToVec(pvp.position);
 		this.pos = mercatorToVec(vp.position);
+		this.pquat = (pvp as any).orientation;
+		this.quat = (vp as any).orientation;
+		if (!this.pquat) this.pquat = QUAT_ZERO;
+		if (!this.quat) this.quat = QUAT_ZERO;
 		this.t = 0;
 		this.max_t = secs;
 	}
@@ -62,14 +81,10 @@ class CamInterpolation {
 		if ((this.t += dt) >= this.max_t) return null;
 
 		const alpha = this.t / this.max_t;
-		let pos = [];
-		for (let i = 0; i < this.ppos.length; i++) {
-			pos.push(this.ppos[i] * (1.0 - alpha) + this.pos[i] * alpha);
-		}
+		let pos = lerp(this.ppos, this.pos, alpha);
+		let quat = lerp(this.pquat, this.quat, alpha);
 
-		// TODO: Angle
-
-		return new CamFrame(pos);
+		return new CamFrame(pos, quat);
 	}
 }
 
@@ -155,14 +170,14 @@ export class MMap {
 		this.vp = vp;
 		const pvp = this.map.getFreeCameraOptions();
 		const interp = new CamInterpolation(pvp, vp, secs);
+		console.log(interp);
 
-		let last_time = 0;
+		let last_time = null;
 		const advanceFrame = (time) => {
-			time /= 1000;
-			if (last_time == 0) last_time = time;
-			let dt = time - last_time;
+			time /= 10000;
 
-			console.log(`frame! ${dt}`);
+			if (!last_time) last_time = time;
+			let dt = time - last_time;
 
 			const frame = interp.step(dt);
 			if (frame) {
