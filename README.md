@@ -1,5 +1,8 @@
 # GeoTales-map
 
+This repository contains the source-code for the map-specific code of GeoTales-alpha.
+This is all the code controlling the map visualisations, animations and transitions.
+
 ### Datastructure
 ```javascript
 let o =
